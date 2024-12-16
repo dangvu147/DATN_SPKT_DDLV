@@ -1,0 +1,32 @@
+function Out_SM    = OP_SM(Q_1,Q_2,P1,alpha,beta,k_1,k_2,sigma1,sigma2,sigma3,lamda_1,lamda_2,So_mau_thu,SNR_th,FIG)
+CDF_SM             = zeros(1,length(P1)); %vector đếm số lỗi giải mã
+P_1             = 10.^(P1/10); %mW
+for ii=1:length(P_1)     
+     for bit_num  = 1:So_mau_thu % thực hiện 10^5 mẫu thử
+        g1 = gauss(0,(1/(2*lamda_1)),1,1)+ 1i*gauss(0,(1/(2*lamda_1)),1,1); %tạo kênh fading Rayleigh theo phân bố chuẩn phức CN(0,Gh1) 
+        absg1 = abs(g1)^2; % tính độ lợi kênh, theo phân bố Exponential 
+        gama_SR = absg1/((k_1^2)*absg1 + Q_1*((1-beta)*sigma1 + sigma2)/((1-beta)*P_1(ii))) %công thức (3.13)
+
+        g2 = gauss(0,1/(2*lamda_2),1,1)+ 1i*gauss(0,1/(2*lamda_2),1,1); %tạo kênh fading Rayleigh theo phân bố chuẩn phức CN(0,Gh2) 
+        absh2 = (abs(g2)^2)/Q_2; % tính độ lợi kênh, theo phân bố Exponential 
+        P_2 = (alpha*beta*P_1(ii)*absg1*(1+k_1^2))/Q_1;  %công thức (3.9)
+
+        gama_RD = (absh2*P_2)/(absh2*P_2*(k_2^2)+sigma3) %công thức (3.14)
+         gama_DF = min(gama_SR,gama_RD);
+         %R_SD      = log2(1+gama_DF); % Tốc độ dữ liệu có thể đạt được giữa thiết bị S và D    
+         if (gama_DF < SNR_th) % mô phỏng tìm 1 lỗi theo phương trình đầu của công thức (3.15)
+            CDF_SM(ii)  = CDF_SM(ii) + 1; % lưu 1 lỗi vào vector               
+        end         
+     end
+end
+CDF_SM    =   CDF_SM./So_mau_thu; % tính xác suất lỗi
+ Out_SM    = CDF_SM;
+ if (FIG==1) 
+       Out_SM
+       semilogy(P1, CDF_SM,'sr'); %vẽ xác suất lỗi theo công suất phát
+       
+       xlabel('P1 (dBm)'); ylabel('Xác suất dừng');     
+       title('Xác suất dừng theo công suất truyền');
+       grid on; hold on; 
+ end
+end
