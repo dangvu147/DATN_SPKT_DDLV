@@ -2,11 +2,12 @@
 clear all;
 clc;
 SNR_th =0.01;  % Ngưỡng SNDR 
+%SNR_th=0.008;  % Ngưỡng SNDR 
 So_mau_thu = 10^5; % Số lần mô phỏng
 P1 = 20:5:70; % Dải công suất truyền (dBm)
 P_1             = 10.^(P1/10); %mW
 k_1 = 0.3; k_2 = 0.3; % hệ số k (HIs levels)
-k_1 = 0; k_2 = 0; % hệ số k (HIs levels)
+%k_1 = 0; k_2 = 0; % hệ số k (HIs levels)
 alpha = 0.5; beta = 0.5;
 a_1 = 5.0188; b_1 = 0.3511;  %tham số độ suy giảm đường truyền
 a_2 = 5.0188; b_2 = 0.3511;  %tham số độ suy giảm đường truyền
