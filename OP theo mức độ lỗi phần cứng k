@@ -47,7 +47,7 @@ epsilon_2 =ts4./ms4;
 
 FIG =3;
 %---------------------------------------------------
-% 1. Ảnh hưởng của công suất truyền lên Xác suát dừng 
+% 1. Ảnh hưởng của Mức độ lỗi phần cứng k lên Xác suát dừng 
  lamda_1 =1; lamda_2=1;
  OP_k             = zeros(1,length(k)); %vector đếm số lỗi giải mã
 for nn=1:length(k)
@@ -57,7 +57,7 @@ end
 
 OP_k
 OPLT_k
-semilogy(k, OP_k,'sb'); %vẽ xác suất lỗi theo công suất phát
+semilogy(k, OP_k,'sb'); %vẽ xác suất dừng theo Mức độ lỗi phần cứng k
 %semilogy(k, OPLT_k,'-b');  
        xlabel('Mức độ lỗi phần cứng k'); ylabel('Xác suất dừng');     
        title('Xác suất dừng theo mức độ lỗi phần cứng k');
