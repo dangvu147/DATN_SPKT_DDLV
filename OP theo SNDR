@@ -1,6 +1,6 @@
 % Các tham số
 SNR_th =0:0.0015:0.03;  % Ngưỡng SNDR 1
-So_mau_thu = 100000; % Số lần mô phỏng
+So_mau_thu = 10^5; % Số lần mô phỏng
 P1 = 40; %công suất truyền 
 P_1             = 10.^(P1/10); %mW
 k_1 = 0.3; k_2 = 0.3; % hệ số k (HIs levels)
