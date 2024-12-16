@@ -1,0 +1,57 @@
+% Các tham số
+SNR_th =0:0.0015:0.03;  % Ngưỡng SNDR 1
+So_mau_thu = 100000; % Số lần mô phỏng
+P1 = 40; %công suất truyền 
+P_1             = 10.^(P1/10); %mW
+k_1 = 0.3; k_2 = 0.3; % hệ số k (HIs levels)
+%k_1 = 0; k_2 = 0; % hệ số k (HIs levels)
+beta = 0.5;
+alpha = 0.5; 
+a_1 = 5.0188; b_1 = 0.3511;  %tham số độ suy giảm đường truyền
+a_2 = 5.0188; b_2 = 0.3511;  %tham số độ suy giảm đường truyền
+nLOS = 0.1;  
+nNLOS = 21; 
+sigma1 = -100; %dBm
+sigma1 = 10^(sigma1/10); %mW 
+sigma3 = sigma1; 
+sigma2 = -90;
+sigma2 = 10^(sigma2/10);
+%tham số độ suy giảm đường truyền nhóm truyền sóng trực tiếp và không trực tiếp
+c = 3e8; % tốc độa ánh sáng
+f = 2e9; %tần số sóng mang
+r1 = 400; r2 = 600; % khoảng cách hình chiếu giữa UAV và điểm phát, điểm nhận, m
+H = 300;  % Dải độ cao UAV (m)
+d_1 = sqrt(r1^2+H^2);  % khoảng cách điểm phát và UAV
+d_2 = sqrt(r2^2+H^2);  % khoảng cách điểm nhận và UAV
+theta_1 = atan(H/r1); theta_2 = atan(H/r2);
+
+  A_1_dB  = 20 * log10(d_1) + 20 * log10(4*pi*f/c) + nNLOS;
+   ms1 = (1 + a_1 * exp(-b_1 * (theta_1 - a_1)));
+   ts1_dB = (nLOS - nNLOS);  ts1 = 10^(ts1_dB/10); ts1 = ts1/ms1;
+   PL_1 = 10* log10(ts1) + A_1_dB;
+   Q_1 = 10^(PL_1/10);
+
+   A_2_dB  = 20 * log10(d_2) + 20 * log10(4*pi*f/c) + nNLOS;
+   ms2= 1 + a_2 * exp(-b_2 * (theta_2 - a_2));
+   ts2_dB = (nLOS - nNLOS);  ts2 = 10^(ts2_dB/10); ts2 = ts2/ms2;
+   PL_2 = 10* log10(ts2) + A_2_dB;
+   Q_2 = 10^(PL_2/10);
+
+epsilon_1 = Q_1 .* (sigma1 .* (1 - beta) + sigma2 ) .* SNR_th ./ ((1- k_1^2 .* SNR_th) .* (1 - beta) .* P_1);
+epsilon_2 = Q_1 .* Q_2 .* sigma3 .* SNR_th ./ (alpha * beta .* P_1 .* ( (1 + k_1^2) .* (1 - k_2^2 .* SNR_th)));
+FIG =4;
+%---------------------------------------------------
+% 1. Ảnh hưởng của SNDR lên Xác suát dừng 
+ lamda_1 =1; lamda_2=1;
+ OP_SNR             = zeros(1,length(SNR_th)); %vector đếm số lỗi giải mã
+for nn=1:length(SNR_th)
+   OP_SNR(nn) = OP_SM(Q_1,Q_2,P1,alpha,beta,k_1,k_2,sigma1,sigma2,sigma3,lamda_1,lamda_2,So_mau_thu,SNR_th(nn),FIG);%Mô phỏng theo phương pháp Monte-Carlo
+    OPLT_SNR(nn)= OP_LT(P1,lamda_1,lamda_2,epsilon_1(nn),epsilon_2(nn),FIG);
+end
+OPLT_SNR
+OP_SNR
+semilogy(SNR_th, OP_SNR,'sb'); %vẽ xác suất dừng theo SNDR
+%semilogy(SNR_th, OPLT_SNR,'-b');   
+       xlabel('SNDR'); ylabel('Xác suất dừng');     
+       title('Xác suất dừng theo SNDR');
+       grid on; hold on; 
