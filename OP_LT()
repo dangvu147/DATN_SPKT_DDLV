@@ -1,0 +1,22 @@
+function Out_LT = OP_LT(P1,lamda_1,lamda_2,epsilon_1,epsilon_2,FIG)
+g=0;
+N=10;
+z_values = sqrt(4 .* lamda_1 .* lamda_2 .* epsilon_2);
+K= besselk(1,z_values);
+for j=1:N
+
+   phi_n = cos((2*j-1)*pi/(2*N));
+   c_n = epsilon_1.*(phi_n + 1)./2;
+   m = lamda_1 .* epsilon_1 .* 0.5 .*sqrt(1-phi_n^2).*exp(-lamda_1.*c_n - lamda_2.*epsilon_2./c_n).*pi./N;
+   a=exp(-lamda_1.*c_n - lamda_2.*epsilon_2./c_n);
+   b=lamda_1 .* epsilon_1 .* 0.5;
+   g=g+m;
+end
+
+Out_LT = 1 - z_values .* K + g ; %theo phương trình cuối của công thức (3.29)
+    if (FIG==1) 
+        Out_LT
+        semilogy(P1, Out_LT,'-r'); %vẽ các giá trị xác suất từ biểu thức toán      
+        grid on; hold on;      
+    end
+end
